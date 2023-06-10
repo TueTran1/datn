@@ -12,7 +12,7 @@ import base64
 from io import BytesIO
 
 
-myclient = pymongo.MongoClient("mongodb+srv://tranthanhtue:tuetran123@cluster0.lsnutbu.mongodb.net/")
+myclient = pymongo.MongoClient("/")
 db = myclient["blog-database"]
 detection = db["detections"]
 user=db["users"]

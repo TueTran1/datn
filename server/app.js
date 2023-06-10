@@ -31,7 +31,7 @@ app.use(express.json())
 
 const JWT_SECRET = 'E2831E78F46FD6C2735E4E3A3494623D4C3C1C7B9823633DE94D611AFA525459'
 const port = 5000
-const mongoUrl = 'mongodb+srv://tranthanhtue:tuetran123@cluster0.lsnutbu.mongodb.net/blog-database'
+const mongoUrl = ''
 
 mongoose.connect(mongoUrl)
 .then(()=>{
