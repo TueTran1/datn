@@ -322,9 +322,9 @@ app.post("/get-info", async (req, res) => {
 })
 
 app.post("/user-detection-by-date", async (req, res) => {
-  const { username } = req.body;
+  const { userID } = req.body;
   try {
-    await Detection.find({username: username})
+    await Detection.find({user: userID})
     .then((data)=>{
       res.send({status:'ok',data:data})
     }).catch((err)=>{

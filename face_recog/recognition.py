@@ -146,7 +146,7 @@ class FaceRecognition:
                                 _, im_arr = cv2.imencode('.jpg', img)  # im_arr: image in Numpy one-dim array format.
                                 im_bytes = im_arr.tobytes()
                                 im_b64 = str(base64.b64encode(im_bytes))
-                                captured= "data:image/jpeg;base64,".join(im_b64[2:-1])
+                                captured= "data:image/jpeg;base64,"+(im_b64[2:-1])
 
                                 detection.insert_one({ "user":ObjectId(name),"time": detected,"type":"Out","confidence":confidence,"captured":captured })
                                 print("        ",name,datetime.now(),"Out")

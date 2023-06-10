@@ -80,7 +80,7 @@ article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
 }
 .popup-image{
   position: fixed;
-  z-index: 2;
+  z-index: 4;
   top: 0;
   left: 0;
   width: 100%;

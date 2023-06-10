@@ -12,7 +12,7 @@ import {
   DayView,
   Appointments,
 } from '@devexpress/dx-react-scheduler-material-ui';
-
+import PopupCatured from"./popupCaptured"
 const ViewUserDetails = (_) => {
     // console.log("ViewUserDetail",months)
     const [detection, setDetectionData] = useState("");
@@ -22,7 +22,9 @@ const ViewUserDetails = (_) => {
 	const [selectDate, setSelectDate] = useState(thisDate);
     const { state } = useLocation();
     const userID = state.user._id
-    const username = state.user.username
+    const [buttonPopupCaptured, setButtonPopupCaptured] = useState(false)
+    const [detectionID, setDetectionID] = useState()
+
     
     function addOneDay(date ) {
         date = new Date(date); 
@@ -49,7 +51,7 @@ const ViewUserDetails = (_) => {
                 "Access-Control-Allow-Origin": "*",
             },
             body: JSON.stringify({
-                username : username
+                userID : userID
             })})
             .then(response => response.json())
             .then((data) => {
@@ -363,22 +365,25 @@ const ViewUserDetails = (_) => {
                                             <tr>
                                                 <th>Time </th>
                                                 <th>Type</th>
-                                                <th>Capture</th>
+                                                <th>View Info</th>
                                                 
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {detection == "" || detection == null ? "" :  
-                                                detection.map(detections => 
+                                                detection.map((detections, index) => 
                                                     ( 
-                                                        // console.log(detections.time.slice(0,10),"detections"),
-                                                        // console.log(selectDate.toISOString().slice(0,10),"selectDate")
                                                         detections.time.slice(0,10)==addOneDay(selectDate.toISOString().slice(0,10)).toISOString().slice(0,10)?
                                                         // console.log("ok"):console.log("no")
                                                         <tr>
-                                                            <td>{detections.time.slice(11,19)}</td>
+                                                            <td >{detections.time.slice(11,19)}</td>
                                                             <td>{detections.type}</td>
-                                                            <td></td>   
+                                                            <td ><button className="text-primary"  onClick={()=>setDetectionID(detections._id) }>
+                                                                <span class="text">View</span>
+                                                            </button>
+                                                            <PopupCatured trigger={detectionID==detections._id} detections={detections} setTrigger={setDetectionID}>
+                                                            </PopupCatured>
+                                                            </td>                                                            
                                                         </tr>:
                                                         <tr></tr>
                                                     ))}

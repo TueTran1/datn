@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 require('./User.js')
+const Schema = mongoose.Schema;
 
 const DetectionSchema = new mongoose.Schema(
   {

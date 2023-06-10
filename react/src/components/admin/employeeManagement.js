@@ -18,8 +18,9 @@ const ViewUserDetails = (_) => {
     const [buttonChangePW, setButtonPopupChangePW] = useState(false)
     const [buttonPopupPersonal, setButtonPopupPersonal] = useState(false)
     const { state } = useLocation();
+    console.log(state,"state")
     const userID = state.user._id
-    // console.log(state.user.image,"image")
+    
     const logOut=()=>{
             window.localStorage.clear()
             window.location.href="./sign-in"
@@ -207,7 +208,7 @@ const ViewUserDetails = (_) => {
                                         </span>
                                     <span class="text">Change Info</span>
                                 </button>
-                                <PopupPosition trigger={buttonPopupPosition} setTrigger={setButtonPopupPosition}></PopupPosition>
+                                <PopupPosition trigger={buttonPopupPosition}  setTrigger={setButtonPopupPosition}></PopupPosition>
                             </div>
                         
                         </div>

@@ -18,12 +18,12 @@ detection = db["detections"]
 user=db["users"]
 
 
-imagedict= user.find({},{"_id":1,"image":1})
+imagedict= detection.find({},{"_id":1,"captured":1})
 
 with open(r'get-base64.txt', 'w') as fp:
     for item in imagedict:
-        if item["image"] != "" and item["image"] != None and item["image"] != "no image":
-            fp.write("%s%s\n" % (item["_id"] ,item["image"]) )
+        if item["captured"] != "" and item["captured"] != None and item["captured"] != "no image":
+            fp.write("%s%s\n" % (item["_id"] ,item["captured"]) )
     print('Done')
 data = []
 
