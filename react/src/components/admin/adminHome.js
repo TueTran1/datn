@@ -3,14 +3,14 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 export default function AdminHome({ userData }) {
     const logOut=()=>{
         window.localStorage.clear()
-        window.location.href="./sign-in"
+        window.location.href="/sign-in"
     }
   return (
     <div id="wrapper">
 
     <ul  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/home">
             <div class="sidebar-brand-icon rotate-n-15">
                 <i class="fas fa-laugh-wink"></i>
             </div>
@@ -19,10 +19,10 @@ export default function AdminHome({ userData }) {
 
         <hr class="sidebar-divider my-0"></hr>
 
-        <li class="nav-item">
+        <li class="nav-item active">
             <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/home'}>Home Page</Link></span></a>
+                <span className="px py bg-gradient-focus text-white"><Link className="nav-link " to={'/home'}>Home Page</Link></span></a>
         </li>
 
         <hr class="sidebar-divider my-0"></hr>
@@ -45,7 +45,7 @@ export default function AdminHome({ userData }) {
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Dayoff Requests</Link></span></a>
+                <span><Link className="nav-link " to={'/work-schedule'}> Work Schedule</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -53,6 +53,13 @@ export default function AdminHome({ userData }) {
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span><Link className="nav-link " to={'/company-details'}> Company Management</Link></span></a>
+        </li>
+        <hr class="sidebar-divider my-0"></hr>
+
+        <li class="nav-item">
+        <a class="nav" >
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span><Link className="nav-link " to={'/change-password'}> Change Password</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -88,15 +95,13 @@ export default function AdminHome({ userData }) {
                                 <h6 class="m-0 font-weight-bold text-primary">Profile image</h6>
                             </div>
                             <div class="card-body">
-                                <div></div>
+                            {userData.image == "" || userData.image == null || userData.image == "no image" ? "" : <img width={420} height={250} src={userData.image}/>}
+                            <h1 class="h5 mb-0 text-gray-800"><u></u></h1>
+                            <br/>
+                               
                             </div>
 
                         </div>
-                        <div class="card shadow mb-4">
-                                <div class="card-body">
-                                <Link className="btn btn-primary btn-user "  to={'/change-password'}> Change Password</Link>
-                                </div>
-                            </div>
 
 
 

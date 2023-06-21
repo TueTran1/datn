@@ -12,8 +12,10 @@ import {
   DayView,
   Appointments,
 } from '@devexpress/dx-react-scheduler-material-ui';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+
 import PopupCatured from"./popupCaptured"
-const ViewUserDetails = (_) => {
+const EmployeeSalary = (_) => {
     // console.log("ViewUserDetail",months)
     const [detection, setDetectionData] = useState("");
     const days = ["S", "M", "T", "W", "T", "F", "S"];
@@ -22,9 +24,14 @@ const ViewUserDetails = (_) => {
 	const [selectDate, setSelectDate] = useState(thisDate);
     const { state } = useLocation();
     const userID = state.user._id
-    const [buttonPopupCaptured, setButtonPopupCaptured] = useState(false)
     const [detectionID, setDetectionID] = useState()
+    const [Dayoff, setDayoff] = useState()
+    const [salary, setSalary] = useState()    
+    const [toggleState, setToggleState] = useState(1);
 
+    const toggleTab = (index) => {
+        setToggleState(index);
+    };
     
     function addOneDay(date ) {
         date = new Date(date); 
@@ -37,7 +44,7 @@ const ViewUserDetails = (_) => {
     const navigate = useNavigate();
     const logOut=()=>{
             window.localStorage.clear()
-            window.location.href="./sign-in"
+            window.location.href="/sign-in"
     }
 
     const getData = (setData, setLoading) => {
@@ -58,7 +65,7 @@ const ViewUserDetails = (_) => {
             setTimeout(() => {
                 setData(data.data);
                 setDetectionData(data.data)
-                console.log(data.data);
+                // console.log(data.data);
                 setLoading(false);
             }, 600);
             });
@@ -104,9 +111,68 @@ const ViewUserDetails = (_) => {
     const setLoading = React.useCallback(nextLoading => dispatch({
       type: 'setLoading', payload: nextLoading,
     }), [dispatch]);
+
+    function getDayoffInfo(setDayoff) {
+        fetch("http://localhost:5000/get-requested-dayoff-by-user",{
+        method:"POST",
+        crossDomain:true,
+        headers:{
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            userID : userID
+        })
+        }).then((res) => res.json())
+        .then((data) =>{
+            setDayoff(data.data);
+            
+        })
+    }
+
+    function getSalaryInfo(setSalary) {
+        fetch("http://localhost:5000/get-salary-by-user",{
+        method:"POST",
+        crossDomain:true,
+        headers:{
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            userID : userID
+        })
+        }).then((res) => res.json())
+        .then((data) =>{
+            setSalary(data.data);
+        })
+    }
+
+    function dayoffThisMonth(Dayoff,selectDate) {
+        let dayoffThisMonth  = Dayoff.filter((dayoff) => (dayoff.started.slice(0,7)===selectDate.toISOString().slice(0,7)&&dayoff.condition=="yes"))
+        let dayoffcount = 0
+        dayoffThisMonth.map((dayoff) => (dayoffcount+=dayoff.timespan))
+        return dayoffcount
+    }
+
+    function fixedSalary(salary,selectDate) {
+        let fixedSalary = salary.filter((salary) =>(salary.updated.slice(0,7) <= selectDate.toISOString().slice(0,7))).map((salary) =>(salary.updated))
+        if (fixedSalary==""){ return }
+        else{
+            const max = fixedSalary.reduce(function (a, b) { return a > b ? a : b; })
+            const displaySalary = salary.filter(salary=>salary.updated==max)
+            return( displaySalary.map(salary=>salary.salary) )
+        }
+        
+    }
+
+
     useEffect(()=>{
         getData(setData, setLoading);
-    },[setData, currentViewName, currentDate])
+        getDayoffInfo(setDayoff);
+        getSalaryInfo(setSalary)
+    },[setData, currentViewName, currentDate,setDayoff,setSalary])
 
     
 
@@ -115,7 +181,7 @@ const ViewUserDetails = (_) => {
 
 <ul  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/home">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
@@ -131,10 +197,10 @@ const ViewUserDetails = (_) => {
         </li>
     <hr class="sidebar-divider my-0"></hr>
     
-    <li class="nav-item">
+    <li class="nav-item active">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Users Management</Link></span></a>
+                <span className="px py bg-gradient-focus text-white"><Link className="nav-link " to={'/user-details'}> Users Management</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -149,7 +215,7 @@ const ViewUserDetails = (_) => {
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Dayoff Requests</Link></span></a>
+                <span><Link className="nav-link " to={'/work-schedule'}> Work Schedule</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -157,6 +223,13 @@ const ViewUserDetails = (_) => {
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span><Link className="nav-link " to={'/company-details'}> Company Management</Link></span></a>
+        </li>
+        <hr class="sidebar-divider my-0"></hr>
+
+        <li class="nav-item">
+        <a class="nav" >
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span><Link className="nav-link " to={'/change-password'}> Change Password</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -175,7 +248,7 @@ const ViewUserDetails = (_) => {
 
         <div id="content">
         <nav class="  navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow ">
-            <p class=" h3 mb-0 text-gray-800 text-center" >User Salary Details: {detection.fullname}</p>
+            <p class=" h3 mb-0 text-gray-800 text-center" >User Salary Details: {Dayoff =="" || Dayoff == undefined?"":Dayoff[0].user.fullname} </p>
           
             </nav>
 
@@ -274,37 +347,34 @@ const ViewUserDetails = (_) => {
                         
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Salary Info</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Salary Info: {selectDate.toISOString().slice(0,7)}</h6>
                             </div>
                             <div class="card-body">
                                 <table  width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Salary this month</th>
-                                            <th>Salary per hour</th>
+                                            <th>Fixed Salary this month</th>
+                                            <th>Dayoffs this month</th>
                                         </tr>
                                     </thead>
                                     <tfoot>
                                     <tr>
-                                        {/* <td>{data.username}</td>
-                                        <td>{data.fullname}</td> */}
+                                        <td>{salary=="" || salary == undefined || salary==null ||salary[0].salary == ""  ? 
+                                        <td>-</td> : fixedSalary(salary,selectDate)}</td>
+                                        <td>{Dayoff=="" || Dayoff == undefined || Dayoff==null  ? 
+                                            <td>-</td>:dayoffThisMonth(Dayoff,selectDate)}</td>
                                     </tr>
                                     <tr>
-                                        <th>Dayoffs</th>
-                                        <th>Time out of office </th>
+                                        <th>Salary this month</th>
                                     </tr>
                                     <tr>
-                                        {/* <td>{data.address}</td>
-                                        <td>{data.phonenumber}</td> */}
+                                        <td>{Dayoff=="" || Dayoff == undefined || Dayoff==null ||Dayoff == "" || salary=="" || salary == undefined ||
+                                         salary==null ||salary[0].salary == ""  ? "" : 
+                                         (fixedSalary(salary,selectDate)/26*(26-dayoffThisMonth(Dayoff,selectDate))).toLocaleString()}</td>
                                     </tr>
                                 </tfoot>
                                     
                                 </table>
-                                <button  class="btn btn-primary btn-user" >
-                                    <span class="icon text-white-50">
-                                        </span>
-                                    <span class="text">Change Info</span>
-                                </button>
                             </div>
                         
                         </div>
@@ -312,87 +382,126 @@ const ViewUserDetails = (_) => {
 
                     </div>
                     
-
                     <div class="col-xl-9 col-lg-10">
                         <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary ">Employee Detections</h6>
+                            <div class="bloc-tabs">
+                                <button  className={toggleState === 1 ? "tabs active-tabs" : "tabs"} onClick={() => toggleTab(1)}>
+                                <h6 class="m-0 font-weight-bold text-primary">Employee Detections</h6>
+                                </button>
+                                <button className={toggleState === 2 ? "tabs active-tabs" : "tabs"} onClick={() => toggleTab(2)}>
+                                <h6 class="m-0 font-weight-bold text-primary">Employee Dayoffs</h6>
+                                </button>
                             </div>
                             <div class="card-body d-sm-flex">
-                                <div class="col-xl-4 col-lg-10 ">
-                                    <div class="card shadow mb-1"> 
-                                        <Paper>
-                                            <Scheduler
-                                            data={data} 
-                                            >
-                                            <ViewState
-                                                currentDate={selectDate.toDate()}
-                                            />
-                                            <DayView
-                                                startDayHour={0}
-                                                endDayHour={12}
-                                                cellDuration={60}
-                                            />
-                                            <Appointments />
-                                            
-                                            </Scheduler>
-                                        </Paper>
-                                    </div>
+                                <div className={toggleState === 1 ? "content  active-content" : "content"}>
+                                <div class="card-body d-sm-flex">
+                                            <div class="col-xl-4 col-lg-10 ">
+                                                <div class="card shadow mb-1"> 
+                                                    <Paper>
+                                                        <Scheduler
+                                                        data={data} 
+                                                        >
+                                                        <ViewState
+                                                            currentDate={selectDate.toDate()}
+                                                        />
+                                                        <DayView
+                                                            startDayHour={0}
+                                                            endDayHour={12}
+                                                            cellDuration={60}
+                                                        />
+                                                        <Appointments />
+                                                        
+                                                        </Scheduler>
+                                                    </Paper>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-10 ">
+                                                <div class="card shadow mb-1">
+                                                    <Paper>
+                                                        <Scheduler
+                                                        data={data}
+                                                        >
+                                                        <ViewState
+                                                            currentDate={selectDate.toDate()}
+                                                        />
+                                                        <DayView
+                                                            startDayHour={12}
+                                                            endDayHour={24}
+                                                            cellDuration={60}
+                                                        />
+                                                        <Appointments />
+                                                        
+                                                        </Scheduler>
+                                                    </Paper>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-10 ">
+                                                <div class="card shadow mb-1">
+                                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">                                
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Time </th>
+                                                                <th>Type</th>
+                                                                <th>View Info</th>
+                                                                
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {detection == "" || detection == null ? "" :  
+                                                                detection.map((detections, index) => 
+                                                                    ( 
+                                                                        detections.time.slice(0,10)==addOneDay(selectDate.toISOString().slice(0,10)).toISOString().slice(0,10)?
+                                                                        // console.log("ok"):console.log("no")
+                                                                        <tr>
+                                                                            <td >{detections.time.slice(11,19)}</td>
+                                                                            <td>{detections.type}</td>
+                                                                            <td ><button className="text-primary"  onClick={()=>setDetectionID(detections._id) }>
+                                                                                <span class="text">View</span>
+                                                                            </button>
+                                                                            <PopupCatured trigger={detectionID==detections._id} detections={detections} setTrigger={setDetectionID}>
+                                                                            </PopupCatured>
+                                                                            </td>                                                            
+                                                                        </tr>:
+                                                                        <tr></tr>
+                                                                    ))}
+                                                        
+                                                        </tbody>
+
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                 </div>
-                                <div class="col-xl-4 col-lg-10 ">
-                                    <div class="card shadow mb-1">
-                                        <Paper>
-                                            <Scheduler
-                                            data={data}
-                                            >
-                                            <ViewState
-                                                currentDate={selectDate.toDate()}
-                                            />
-                                            <DayView
-                                                startDayHour={12}
-                                                endDayHour={24}
-                                                cellDuration={60}
-                                            />
-                                            <Appointments />
-                                            
-                                            </Scheduler>
-                                        </Paper>
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 col-lg-10 ">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">                                
+
+                                <div className={toggleState === 2 ? "content  active-content" : "content"} >
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">                                
                                         <thead>
                                             <tr>
-                                                <th>Time </th>
-                                                <th>Type</th>
-                                                <th>View Info</th>
-                                                
+                                                <th>Started </th>
+                                                <th>Timespan</th>
+                                                <th>Description </th>
+                                                <th>Condition</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {detection == "" || detection == null ? "" :  
-                                                detection.map((detections, index) => 
+                                            {Dayoff == "" || Dayoff == null ? "" :  
+                                                Dayoff.map((dayoffs, index) => 
                                                     ( 
-                                                        detections.time.slice(0,10)==addOneDay(selectDate.toISOString().slice(0,10)).toISOString().slice(0,10)?
+                                                        dayoffs.started.slice(0,7)==selectDate.toISOString().slice(0,7)?
                                                         // console.log("ok"):console.log("no")
                                                         <tr>
-                                                            <td >{detections.time.slice(11,19)}</td>
-                                                            <td>{detections.type}</td>
-                                                            <td ><button className="text-primary"  onClick={()=>setDetectionID(detections._id) }>
-                                                                <span class="text">View</span>
-                                                            </button>
-                                                            <PopupCatured trigger={detectionID==detections._id} detections={detections} setTrigger={setDetectionID}>
-                                                            </PopupCatured>
-                                                            </td>                                                            
-                                                        </tr>:
-                                                        <tr></tr>
+                                                            <td >{dayoffs.started.slice(0,10)}</td>
+                                                            <td>{dayoffs.timespan}</td> 
+                                                            <td >{dayoffs.description}</td>
+                                                            <td>{dayoffs.condition}</td>                                                         
+                                                        </tr>:<tr></tr>
                                                     ))}
                                            
                                         </tbody>
 
                                     </table>
                                 </div>
-                                
                             </div>
                         
                         </div>
@@ -410,4 +519,4 @@ const ViewUserDetails = (_) => {
   );
 };
 
-export default ViewUserDetails;
+export default EmployeeSalary;

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { BrowserRouter as createSearchParams, useNavigate, Route, Link } from 'react-router-dom'
 
 
-export default class DetectionDetail extends Component {
+export default class AllUsersDetail extends Component {
   constructor(props){
     super(props)
     this.state={
@@ -11,20 +11,20 @@ export default class DetectionDetail extends Component {
   }
    logOut=()=>{
     window.localStorage.clear()
-    window.location.href="./sign-in"
+    window.location.href="/sign-in"
     }
     componentDidMount(){
         fetch("http://localhost:5000/getAllUsers",{
         method:"GET",
         }).then((res) => res.json())
         .then((data) =>{
-        console.log(data.data,"usersData")
+        // console.log(data.data,"usersData")
         this.setState({usersData: data.data})
-        console.log("state")
+        // console.log("state")
         if(data.data=='token expired'){
           //token expired
           window.localStorage.clear()
-          window.location.href='./sign-in'
+          window.location.href='/sign-in'
         }
         })
     }
@@ -35,7 +35,7 @@ export default class DetectionDetail extends Component {
 
           <ul  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
       
-              <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+              <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/home">
                   <div class="sidebar-brand-icon rotate-n-15">
                       <i class="fas fa-laugh-wink"></i>
                   </div>
@@ -51,10 +51,10 @@ export default class DetectionDetail extends Component {
         </li>
     <hr class="sidebar-divider my-0"></hr>
     
-    <li class="nav-item">
+    <li class="nav-item active">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Users Management</Link></span></a>
+                <span className="px py bg-gradient-focus text-white"><Link className="nav-link " to={'/user-details'}> Users Management</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -69,7 +69,7 @@ export default class DetectionDetail extends Component {
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Dayoff Requests</Link></span></a>
+                <span><Link className="nav-link " to={'/work-schedule'}> Work Schedule</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -77,6 +77,13 @@ export default class DetectionDetail extends Component {
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span><Link className="nav-link " to={'/company-details'}> Company Management</Link></span></a>
+        </li>
+        <hr class="sidebar-divider my-0"></hr>
+
+        <li class="nav-item">
+        <a class="nav" >
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span><Link className="nav-link " to={'/change-password'}> Change Password</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -128,8 +135,8 @@ export default class DetectionDetail extends Component {
                                             <th>Role</th>
                                             <th>Position</th>
                                             <th>Department</th>
-                                            <th>Salary</th>
                                             <th>Employee Management</th>
+                                            <th>Detections & Dayoffs </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -142,10 +149,12 @@ export default class DetectionDetail extends Component {
                                             <td>{user.fullname}</td>
                                             <td>{user.email}</td>
                                             <td>{user.role}</td>
-                                            <td>{user.positionID}</td>
-                                            <td>{user.departmentID}</td>
-                                            <td>{user.salaryID}</td>
+                                            {!user.position||user.position==undefined||user.position==null||user.position==""?<td></td>:<td>{user.position.positionName}</td>}
+                                            {!user.department||user.department==undefined||user.department==null||user.department==""?<td></td>:<td>{user.department.departmentName}</td>}
                                             <td><Link className="nav-link " to={ `/user-details/${user._id}`}
+                                            state={{user: user}}
+                                                    >View</Link></td>
+                                             <td><Link className="nav-link " to={ `/user-details/${user._id}/salary`}
                                             state={{user: user}}
                                                     >View</Link></td>
                                             

@@ -5,33 +5,80 @@ import Popup from "./popupDelete"
 import PopupImage from "./popupImage"
 import PopupPosition from "./popupPosition"
 import PopupPersonal from "./popupPersonal"
+import PopupSalaryChange from "./popupSalaryChange"
+import PopupSalaryHistory from "./popupSalaryHistory"
+import PopupChangePassword from "./popupChangePassword"
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-const ViewUserDetails = (_) => {
+const EmployeeManagement = (userData) => {
     const [data, setUserData] = useState("");
     const [department, setDepartmentData] = useState("");
     const [position, setPositionData] = useState("");
+    const [salary, setSalaryData] = useState("");
     const [buttonPopup, setButtonPopup] = useState(false)
     const navigate = useNavigate();
     const [buttonPopupImage, setButtonPopupImage] = useState(false)
     const [buttonPopupPosition, setButtonPopupPosition] = useState(false)
     const [buttonChangePW, setButtonPopupChangePW] = useState(false)
     const [buttonPopupPersonal, setButtonPopupPersonal] = useState(false)
+    const [buttonPopupSalaryChange, setButtonPopupSalaryChange] = useState(false)
+    const [buttonPopupSalaryHistory, setButtonPopupSalaryHistory] = useState(false)
+
     const { state } = useLocation();
-    console.log(state,"state")
+    // console.log(state,"state")
     const userID = state.user._id
     
     const logOut=()=>{
             window.localStorage.clear()
-            window.location.href="./sign-in"
+            window.location.href="/sign-in"
         }
 
     useEffect(()=>{
-        getUserInfo()
-    },[])
+        getUserInfo(setUserData,setDepartmentData,setPositionData)
+        getSalaryInfo(setSalaryData)
+    },[setUserData,setDepartmentData,setPositionData,setSalaryData])
 
     
-    function getUserInfo() {
+    function getSalaryInfo(setSalaryData) {
+        fetch("http://localhost:5000/get-salary-by-user",{
+        method:"POST",
+        crossDomain:true,
+        headers:{
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            userID : userID
+        })
+        }).then((res) => res.json())
+        .then((data) =>{
+            setSalaryData(data.data);
+        })
+    }
+
+    function getNearrestSalary(salary) {
+        const date = new Date(); 
+        const beforeToday= salary.filter((salary) => salary.updated.slice(0,10)<=date.toISOString().slice(0,10))
+        const uniqueDate = beforeToday.filter(function(elem, pos) {
+            return beforeToday.indexOf(elem) == pos;
+        });
+        const updatedList=uniqueDate.map((salary) => salary.updated)
+        const maxDate = updatedList.reduce(function (a, b) { return a > b ? a : b; })
+        const displayDate = uniqueDate.filter((salary) => salary.updated==maxDate)
+        return displayDate.map((salary) =>
+        <tr>
+            <td>{salary.salary}</td>
+            <td>{salary.updated.slice(0,10)}</td>
+        </tr>)
+    }
+
+    function getMaxDate(dates){
+        var max = dates.reduce(function (a, b) { return a > b ? a : b; })
+        console.log(max,"max")
+    }
+
+    function getUserInfo(setUserData,setDepartmentData,setPositionData) {
         fetch("http://localhost:5000/get-info",{
         method:"POST",
         crossDomain:true,
@@ -56,7 +103,7 @@ const ViewUserDetails = (_) => {
 
 <ul  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/home">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
@@ -72,10 +119,10 @@ const ViewUserDetails = (_) => {
         </li>
     <hr class="sidebar-divider my-0"></hr>
     
-    <li class="nav-item">
+    <li class="nav-item active">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Users Management</Link></span></a>
+                <span className="px py bg-gradient-focus text-white"><Link className="nav-link " to={'/user-details'}> Users Management</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -90,7 +137,7 @@ const ViewUserDetails = (_) => {
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Dayoff Requests</Link></span></a>
+                <span><Link className="nav-link " to={'/work-schedule'}> Work Schedule</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -98,6 +145,13 @@ const ViewUserDetails = (_) => {
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span><Link className="nav-link " to={'/company-details'}> Company Management</Link></span></a>
+        </li>
+        <hr class="sidebar-divider my-0"></hr>
+
+        <li class="nav-item">
+        <a class="nav" >
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span><Link className="nav-link " to={'/change-password'}> Change Password</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -124,12 +178,9 @@ const ViewUserDetails = (_) => {
                 
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <button class="h5 mb-0 text-gray-800" onClick={() => navigate(-1)}><u>Back</u></button>
-                    <a href="/user-details/create" class="btn btn-primary btn-icon-split btn-sm">
-                                    <span class="icon text-white-50">+
-                                        <i class="fas fa-flag"></i>
-                                        </span>
-                                    <span class="text">Create new user</span>
-                                </a>
+                    {state.user.role =="admin"?<div></div>:
+                    <Link className="btn btn-primary btn-user "  to={ `/user-details/${userID}/salary`}
+                                            state={{user: data}}> View Timekeeping Details </Link>}
                             </div>
                 <div class="row">
 
@@ -152,36 +203,58 @@ const ViewUserDetails = (_) => {
                                
                             </div>
                         </div>
+                        {state.user.role =="admin"?<div></div>:
                         <div class="card shadow mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Salary Info</h6>
+                            </div>
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="m-0 font-weight-bold text-primary">
-                                            Salary</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
-                                    </div>
-                                    <div class="col-auto">
-                                    <Link className="btn btn-primary btn-user "  to={ `/user-details/${userID}/salary`}
-                                            state={{user: data}}> View Info</Link>
-                                    </div>
-                                </div>
+                                    <div class="col mr-2">                                        
+                                        <table  width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Salary</th>
+                                                    <th>Updated At</th>
+                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    {salary=="" || salary == undefined || salary==null ||salary[0].salary == ""  ? "" : getNearrestSalary(salary)}
+
+                                            </tbody>
+                                        </table>
+                                    </div>                                    
                             </div>
+                            <button  class="btn btn-primary btn-user" onClick={()=>setButtonPopupSalaryChange(true)}>
+                                <span class="icon text-white-50">
+                                    </span>
+                                <span class="text">Change Info</span>
+                            </button>
+                            <PopupSalaryChange trigger={buttonPopupSalaryChange}  setTrigger={setButtonPopupSalaryChange}></PopupSalaryChange>
+                            <button  class="btn btn-primary btn-user" onClick={()=>setButtonPopupSalaryHistory(true)}>
+                                <span class="icon text-white-50">
+                                    </span>
+                                <span class="text">View Salary History</span>
+                            </button>
+                            <PopupSalaryHistory trigger={buttonPopupSalaryHistory}  setTrigger={setButtonPopupSalaryHistory}></PopupSalaryHistory>
                         </div>
                         
-                        </div>
-                        <div class="card shadow mb-4">
+                        </div>}
+                        {state.user.role=="admin"?<div></div>:<div class="card shadow mb-4">
                             <div class="card-body">
-                            <Link className="btn btn-primary btn-user "  to={'/changepw'}> Change Password</Link>
-                            </div>
-                        </div>
-
-
-
+                            <button  class="btn btn-primary btn-user" onClick={()=>setButtonPopupChangePW(true)}>
+                                <span class="icon text-white-50">
+                                    </span>
+                                <span class="text">Change Password</span>
+                            </button>
+                            <PopupChangePassword trigger={buttonChangePW}  setTrigger={setButtonPopupChangePW}></PopupChangePassword>                            </div>
+                        </div>}
                     </div>
                     
-
+                    
                     <div class="col-xl-7 col-lg-5">
+                        {state.user.role =="admin"?<div></div>:
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">Employee Info</h6>
@@ -192,12 +265,14 @@ const ViewUserDetails = (_) => {
                                         <tr>
                                             <th>Position</th>
                                             <th>Department</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tfoot>
+                                        
                                         <tr>
-                                            { department == undefined ||department.departmentName == ""  ? "" : <td>{department.departmentName}</td>}
-                                            { position == undefined ||position.positionName == "" ? "" : <td>{position.positionName}</td>}
+                                            { position == undefined || position.positionName == "" || position.positionName == null ? "" : <td>{position.positionName}</td>}
+                                            { department == undefined ||department.departmentName == "" ||department.departmentName == null  ? "" : <td>{department.departmentName}</td>}
                                         </tr>
                                     </tfoot>
                                     
@@ -211,7 +286,7 @@ const ViewUserDetails = (_) => {
                                 <PopupPosition trigger={buttonPopupPosition}  setTrigger={setButtonPopupPosition}></PopupPosition>
                             </div>
                         
-                        </div>
+                        </div>}
                         
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
@@ -231,25 +306,35 @@ const ViewUserDetails = (_) => {
                                         <td>{data.fullname}</td>
                                     </tr>
                                     <tr>
-                                        <th>Address</th>
-                                        <th>Phone number</th>
-                                    </tr>
-                                    <tr>
-                                        <td>{data.address}</td>
-                                        <td>{data.phonenumber}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Email</th>
+                                        <th>Birthday</th>
                                         <th>Gender</th>
                                     </tr>
                                     <tr>
-                                        <td>{data.email}</td>
+                                        {data.dob==null || data.dob == "" ? <td>-</td>:<td>{data.dob.slice(0,10)}</td>}
                                         <td>{data.gender}</td>
                                     </tr>
                                     <tr>
+                                        <th>Started working</th>
+                                        <th>Stopped working</th>
+                                    </tr>
+                                    <tr>
+                                        {data.start==null || data.start == "" ? <td>-</td>:<td>{data.start.slice(0,10)}</td>}
+                                        {data.stop==null || data.stop == "" ? <td>-</td>:<td>{data.stop.slice(0,10)}</td>}
+                                    </tr>
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>Phone number</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{data.email}</td>
+                                        <td>{data.phonenumber}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address</th>
                                         <th>Role</th>
                                     </tr>
                                     <tr>
+                                        <td>{data.address}</td>
                                         <td>{data.role}</td>
                                     </tr>
                                 </tfoot>
@@ -267,17 +352,20 @@ const ViewUserDetails = (_) => {
                             
                         </div>
                     </div>
+                    {state.user.role =="admin"?<div></div>:
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                            <h1 class="h5 mb-0 text-gray-800"><u></u></h1>
-                            <button  class="btn btn-danger btn-icon-split btn-sm" onClick={()=>setButtonPopup(true)}>
-                                <span class="icon text-white-50">
-                                    <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
-                                    </span>
-                                <span class="text">Delete this user</span>
-                            </button>
-                            <Popup trigger={buttonPopup} setTrigger={setButtonPopup}></Popup>
-                            <div></div>
-                        </div>
+                        <h1 class="h5 mb-0 text-gray-800"><u></u></h1>
+                        
+                        <button  class="btn btn-danger btn-icon-split btn-sm" onClick={()=>setButtonPopup(true)}>
+                            <span class="icon text-white-50">
+                                <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
+                                </span>
+                            <span class="text">Delete this user</span>
+                        </button>
+                        <Popup trigger={buttonPopup} setTrigger={setButtonPopup}></Popup>
+                        <h1 class="h5 mb-0 text-gray-800"><u></u></h1>
+                    </div>}
+                    
                 </div>
 
             </div>
@@ -290,4 +378,4 @@ const ViewUserDetails = (_) => {
   );
 };
 
-export default ViewUserDetails;
+export default EmployeeManagement;

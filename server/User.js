@@ -1,6 +1,8 @@
 const mongoose=require('mongoose')
 require('./Department.js')
 require('./Position.js')
+require('./Dayoff.js')
+
 const Schema = mongoose.Schema;
 
 const UserSchema = new mongoose.Schema(
@@ -18,25 +20,28 @@ const UserSchema = new mongoose.Schema(
       },
       fullname: {
         type: String,
-        required: true,
         maxLength: 100,
       },
       dob: {
           type: Date,
         },
+      start: {
+        type: Date,
+      },
+      stop: {
+        type: Date,
+      },
       address: {
           type: String,
           maxLength: 100,
         },
       phonenumber: {
           type: String,
-          required: true,
           unique: true,
           maxLength: 12,
         },
       email: {
           type: String,
-          required: true,
           unique: true,
           maxLength: 100,
         },
@@ -53,13 +58,9 @@ const UserSchema = new mongoose.Schema(
       department: { 
         type: Schema.Types.ObjectId, ref: 'Department' 
       },
-
       position: { 
         type: Schema.Types.ObjectId, ref: 'Position' 
       },
-      salaryID: {
-          type: String,
-        },
       image: {
           type: String,
           default: 'no image',

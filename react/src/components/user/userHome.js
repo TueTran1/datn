@@ -1,16 +1,74 @@
-import React, { Component, useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-export default function UserHome({ userData }) {
+import React from "react";
+import {useEffect,useState} from "react";
+import {  Link ,useNavigate} from "react-router-dom";
+import PopupSalaryHistory from "./popupSalaryHistory"
+import PopupPersonal from "./popupPersonal"
+const ViewUserDetails = ({userData}) => {
+    const [data, setUserData] = useState("");
+    const [department, setDepartmentData] = useState("");
+    const [position, setPositionData] = useState("");
+    const [salary, setSalaryData] = useState("");
+    const navigate = useNavigate();
+    const [buttonPopupSalaryHistory, setButtonPopupSalaryHistory] = useState(false)
+    const [buttonPopupPersonal, setButtonPopupPersonal] = useState(false)
+
+    const userID = userData._id
+    
     const logOut=()=>{
-        window.localStorage.clear()
-        window.location.href="./sign-in"
+            window.localStorage.clear()
+            window.location.href="/sign-in"
+        }
+
+    useEffect(()=>{
+        getUserInfo()
+        getSalaryInfo()
+    },[])
+
+    
+    function getSalaryInfo() {
+        fetch("http://localhost:5000/get-latest-salary-by-user",{
+        method:"POST",
+        crossDomain:true,
+        headers:{
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            userID : userID
+        })
+        }).then((res) => res.json())
+        .then((data) =>{
+            setSalaryData(data.data);
+        })
+    }
+
+    function getUserInfo() {
+        fetch("http://localhost:5000/get-info",{
+        method:"POST",
+        crossDomain:true,
+        headers:{
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            userID : userID
+        })
+        }).then((res) => res.json())
+        .then((data) =>{
+            // console.log(data,"get info");
+            setUserData(data.data);
+            setDepartmentData(data.data.department)
+            setPositionData(data.data.position)
+        })
     }
   return (
     <div id="wrapper">
 
-    <ul  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+<ul  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+<a class="sidebar-brand d-flex align-items-center justify-content-center" href="/home">
             <div class="sidebar-brand-icon rotate-n-15">
                 <i class="fas fa-laugh-wink"></i>
             </div>
@@ -19,10 +77,10 @@ export default function UserHome({ userData }) {
 
         <hr class="sidebar-divider my-0"></hr>
 
-        <li class="nav-item">
-            <a class="nav" >
+        <li class="nav-item active">
+            <a class="nav " >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/home'}>Home Page</Link></span></a>
+                <span className="px py bg-gradient-focus text-white"><Link className="nav-link"  to={'/home'}>Home Page</Link></span></a>
         </li>
 
         <hr class="sidebar-divider my-0"></hr>
@@ -37,7 +95,7 @@ export default function UserHome({ userData }) {
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/detection-details'}>Detections Management</Link></span></a>
+                <span><Link className="nav-link " to={'/detection-details'}>Timekeeping Details</Link></span></a>
         </li>
         
         <hr class="sidebar-divider my-0"></hr>
@@ -45,7 +103,7 @@ export default function UserHome({ userData }) {
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Work Schedule</Link></span></a>
+                <span><Link className="nav-link " to={'/work-schedule'}> Work Schedule</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -57,42 +115,84 @@ export default function UserHome({ userData }) {
         <hr class="sidebar-divider my-0"></hr>
 
         <li class="nav-item">
-            <a class="nav-link" >
+        <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-              <button onClick={logOut} class="btn btn-primary btn-user ">Log out</button></a>
+                <span><Link className="nav-link " to={'/change-password'}> Change Password</Link></span></a>
         </li>
+        <hr class="sidebar-divider my-0"></hr>
 
-        <hr class="sidebar-divider"></hr>            
 
-    </ul>
+            <li class="nav-item">
+                <a class="nav-link" >
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                <button onClick={logOut} class="btn btn-primary btn-user ">Log out</button></a>
+            </li>
+
+            <hr class="sidebar-divider"></hr>        
+
+</ul>
 
     <div id="content-wrapper" class="d-flex flex-column">
 
         <div id="content">
         <nav class="  navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow ">
-            <p class=" h3 mb-0 text-gray-800 text-center" >Home Page</p>
+            <p class=" h3 mb-0 text-gray-800 text-center" >User Details: {data.fullname}</p>
           
             </nav>
 
             <div class="container-fluid">
                 
-
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <Link className="h5 mb-0 text-gray-800 " to={'/home'}>Back</Link>
+                            </div>
                 <div class="row">
 
-                    <div class="col-xl-4 col-lg-7">
+                    <div class="col-xl-5 col-lg-7">
 
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">Profile image</h6>
                             </div>
                             <div class="card-body">
-                                <div></div>
+                            {data.image == "" || data.image == null || data.image == "no image" ? "" : <img width={420} height={250} src={data.image}/>}
+                            <h1 class="h5 mb-0 text-gray-800"><u></u></h1>
+                            <br/>
+                               
                             </div>
                         </div>
                         <div class="card shadow mb-4">
-                            <div class="card-body">
-                            <Link className="btn btn-primary btn-user "  to={'/change-password'}> Change Password</Link>
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Salary Info</h6>
                             </div>
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">                                        
+                                        <table  width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Salary</th>
+                                                    <th>Updated At</th>
+                                                    
+                                                </tr>
+                                            </thead>
+                                            <tfoot>
+                                                <tr>
+                                                    {salary=="" || salary == undefined || salary==null ||salary[0].salary == ""  ? "" : <td>{salary[0].salary}</td>}
+                                                    {salary=="" || salary == undefined || salary==null ||salary[0].updated == ""  ? "" : <td>{salary[0].updated.slice(0,10)}</td>} 
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>                                    
+                            </div>
+                            
+                            <button  class="btn btn-primary btn-user" onClick={()=>setButtonPopupSalaryHistory(true)}>
+                                <span class="icon text-white-50">
+                                    </span>
+                                <span class="text">View Salary History</span>
+                            </button>
+                            <PopupSalaryHistory userID={userData._id} trigger={buttonPopupSalaryHistory}  setTrigger={setButtonPopupSalaryHistory}></PopupSalaryHistory>
+                        </div>
+                        
                         </div>
 
 
@@ -100,37 +200,32 @@ export default function UserHome({ userData }) {
                     </div>
                     
 
-                    <div class="col-xl-8 col-lg-7">
+                    <div class="col-xl-7 col-lg-5">
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">Employee Info</h6>
                             </div>
                             <div class="card-body">
-                            <table  width="100%" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>Position</th>
-                                        <th>Department</th>
-                                    </tr>
-                                </thead>
-                                <tfoot>
-                                    <tr>
-                                        <td>Position</td>
-                                        <td>Department</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Expertise</th>
-                                        <th>Salary</th>
-                                    </tr>
-                                    <tr>
-                                        <td>Expertise</td>
-                                        <td>Salary</td>
-                                    </tr>
-                                </tfoot>
+                                <table  width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Position</th>
+                                            <th>Department</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        
+                                        <tr>
+                                            { department == undefined ||department.departmentName == ""  ? "" : <td>{department.departmentName}</td>}
+                                            { position == undefined ||position.positionName == "" ? "" : <td>{position.positionName}</td>}
+                                        </tr>
+                                    </tfoot>
+                                    
+                                    
+                                </table>
                                 
-                                
-                            </table>
-                        </div>
+                            </div>
                         
                         </div>
                         
@@ -148,37 +243,52 @@ export default function UserHome({ userData }) {
                                 </thead>
                                 <tfoot>
                                     <tr>
-                                        <td>{userData.username}</td>
-                                        <td>{userData.fullname}</td>
+                                        <td>{data.username}</td>
+                                        <td>{data.fullname}</td>
                                     </tr>
                                     <tr>
-                                        <th>Address</th>
-                                        <th>Phone number</th>
-                                    </tr>
-                                    <tr>
-                                        <td>{userData.address}</td>
-                                        <td>{userData.phonenumber}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Email</th>
+                                        <th>Birthday</th>
                                         <th>Gender</th>
                                     </tr>
                                     <tr>
-                                        <td>{userData.email}</td>
-                                        <td>{userData.gender}</td>
+                                        {data.dob==null || data.dob == "" ? <td>-</td>:<td>{data.dob.slice(0,10)}</td>}
+                                        <td>{data.gender}</td>
                                     </tr>
                                     <tr>
+                                        <th>Started working</th>
+                                        <th>Stopped working</th>
+                                    </tr>
+                                    <tr>
+                                        {data.start==null || data.start == "" ? <td>-</td>:<td>{data.start.slice(0,10)}</td>}
+                                        {data.stop==null || data.stop == "" ? <td>-</td>:<td>{data.stop.slice(0,10)}</td>}
+                                    </tr>
+                                    <tr>
+                                        <th>Email</th>
+                                        <th>Phone number</th>
+                                    </tr>
+                                    <tr>
+                                        <td>{data.email}</td>
+                                        <td>{data.phonenumber}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address</th>
                                         <th>Role</th>
                                     </tr>
                                     <tr>
-                                        <td>{userData.role}</td>
+                                        <td>{data.address}</td>
+                                        <td>{data.role}</td>
                                     </tr>
                                 </tfoot>
-                                
-                                
-                                
                             </table>
+                            {data==""?"":<div><button  class="btn btn-primary btn-user" onClick={()=>setButtonPopupPersonal(true)}>
+                                <span class="icon text-white-50">
+                                    </span>
+                                <span class="text">Change Info</span>
+                            </button>
+                            <PopupPersonal user={data} trigger={buttonPopupPersonal} setTrigger={setButtonPopupPersonal}></PopupPersonal></div>}
+                            
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -190,5 +300,7 @@ export default function UserHome({ userData }) {
     </div>
 
     </div>
-  )
-  }
+  );
+};
+
+export default ViewUserDetails;

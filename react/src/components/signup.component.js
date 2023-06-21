@@ -1,39 +1,49 @@
-import React, { Component } from 'react'
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-export default class SignUp extends Component {
-  constructor(props){
-    super(props)
-    this.state={
-      username:"",
-      password:"",
-      fullname:"",
-      address:"",
-      phonenumber:"",
-      email:"",
-    };
-    this.handleSubmit = this.handleSubmit.bind(this)
-  }
-  handleSubmit(e){
-    e.preventDefault();
-    const{username,password,fullname,address,phonenumber,email}=this.state
-    console.log(username,password,fullname,address,phonenumber,email)
-    fetch("http://localhost:5000/register",{
-      method:"POST",
-      crossDomain:true,
-      headers:{
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        username,password,fullname,address,phonenumber,email
+import React from "react";
+import {useEffect,useState} from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useLocation, Link ,useNavigate} from "react-router-dom";
+
+const Signup = ({}) => {
+  const [username, setUsernameData] = useState("");
+    const [password, setPasswordData] = useState("");
+    const [confirmpassword, setConfirmpassword] = useState("")
+    const [email, setEmailData] = useState("");
+    const [phonenumber, setPhonenumber] = useState("")
+    const [address, setAddressData] = useState("");
+    const [fullname, setFullname] = useState("")
+    const [gender, setGenderData] = useState("");
+    const [dob, setBirthdayData] = useState(new Date());
+
+    let[alert,setAlertData]=useState("")
+
+    const handleSubmit=()=>{
+      // dob = addOneDay(dob)
+      // start = addOneDay(start)
+      if(password==""||username==""||confirmpassword==""){
+          return setAlertData("Input are not filled")
+      }
+      else if (password!=confirmpassword){
+          return setAlertData("New Password is not confirmed")
+      }
+      fetch("http://localhost:5000/register",{
+        method:"POST",    
+        crossDomain:true,
+        headers:{
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          username,password,fullname,address,phonenumber,email,gender,dob
+        })
+      }).then((res) => res.json())
+      .then((data) =>{
+        console.log(data)
+        setAlertData(data.status)
       })
-    }).then((res) => res.json())
-    .then((data) =>{
-      console.log(data,"userRegister");
-    })
-  }
-  render() {
+      }
+
     return (
       <div class="container">
 
@@ -49,34 +59,70 @@ export default class SignUp extends Component {
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Sign up</h1>
                                     </div>
-                                    <form class="user" onSubmit={this.handleSubmit}>
-                                        <div class="form-group">
-                                        <input   type="text" class=" form-control-user" placeholder="Username"
-                                          onChange={(e) => this.setState({username: e.target.value})}/>
-                                        </div>
-                                        <div class="form-group">
-                                        <input   type="text" class=" form-control-user" placeholder="Password"
-                                          onChange={(e) => this.setState({password: e.target.value})}/>
-                                        </div>
-                                        <div class="form-group">
-                                        <input   type="text" class=" form-control-user" placeholder="Full Name"
-                                          onChange={(e) => this.setState({fullname: e.target.value})}/>
-                                        </div>
-                                        <div class="form-group">
-                                        <input   type="text" class=" form-control-user" placeholder="Address"
-                                          onChange={(e) => this.setState({address: e.target.value})}/>
-                                        </div>
-                                        <div class="form-group">
-                                        <input   type="text" class=" form-control-user" placeholder="Phone Number"
-                                          onChange={(e) => this.setState({phonenumber: e.target.value})}/>
-                                        </div>
-                                        <div class="form-group">
-                                        <input   type="text" class=" form-control-user" placeholder="Email"
-                                          onChange={(e) => this.setState({email: e.target.value})}/>
-                                        </div>
-                                          <button type="submit" class="btn btn-primary btn-user ">Sign Up</button>
-                                    </form>
+                                    <table  width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Username:</th>
+                                            <td><input type="text" class="border border-dark" placeholder="Username"
+                                                onChange={(e) => setUsernameData(e.target.value)}/></td>
+                                            <th>Fullname:</th>
+                                            <td><input   type="text" class="border border-dark" placeholder="Fullname"
+                                                onChange={(e) => setFullname(e.target.value)}/></td>
+                                        </tr>
+                                        <br></br>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Password:</th>
+                                            <td><input   type="password" class="border border-dark" placeholder="Password"
+                                                onChange={(e) => setPasswordData(e.target.value)}/></td>
+                                            <th>Confirm Password:</th>
+                                            <td><input   type="password" class="border border-dark" placeholder="Confirm Password"
+                                                onChange={(e) => setConfirmpassword(e.target.value)}/></td>
+                                        </tr>
+                                        <br></br>
+                                        <tr>
+                                          <th>Email:</th>
+                                          <td><input   type="text" class="border border-dark" placeholder="Email"
+                                              onChange={(e) => setEmailData(e.target.value)}/></td>
+                                          <th>Phone Number:</th>
+                                          <td><input   type="text" class="border border-dark" placeholder="Phone Number"
+                                              onChange={(e) => setPhonenumber(e.target.value)}/></td>
+                                        </tr>  
+                                        <br></br> 
+                                        <tr>
+                                          <th>Address:</th>
+                                          <td><input   type="text" class="border border-dark" placeholder="Confirm New Password"
+                                              onChange={(e) => setAddressData(e.target.value)}/></td>
+                                          <th>Birthday:</th>
+                                          <td ><DatePicker
+                                          
+                                            selected={dob}
+                                            onChange={setBirthdayData}
+                                            peekNextMonth
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dropdownMode= "scroll"
+                                          /></td>
+                                        </tr>   
+                                        <br></br>        
+                                        <tr>
+                                          <th>Gender:</th>
+                                          <td><select className="form-control"  onChange={(e) => setGenderData(e.target.value)}>
+                                            <option value="ohter">Choose Gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                          </select></td>
+                                        </tr>   
+                                        <br></br>                       
+                                    </tfoot>
+          
+                                    
+                                </table>
                                     <div class="text-center">
+                                    {alert==""?<tr></tr>:<div><b class="text-danger">{alert}</b></div>}
+                            <button class="btn btn-primary  " onClick={(handleSubmit)}  >Sign up</button>
                                         <Link className="nav-link small" to={'/sign-in'}>
                                           Sign in
                                         </Link>
@@ -94,4 +140,5 @@ export default class SignUp extends Component {
     </div>
     )
   }
-}
+
+export default Signup;

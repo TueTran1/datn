@@ -7,27 +7,37 @@ function PopupPosition(props) {
     const { state } = useLocation();
     // console.log(state.user._id);
     const userID =state.user._id;
-    // console.log(state);
+    // console.log(props.departmentID);
     const [position, setPosition] = useState("");
     const [department, setDepartment] = useState("");
     let [positionID, setPositionID] = useState("");
     let [departmentID, setDepartmentID] = useState("");
+    let [alert, setAlertData] = useState("");
     useEffect(()=>{
         getInfo()
     },[])
+
+    
 
     function getInfo() {
         fetch("http://localhost:5000/getPositionAndDeparment",{
         method:"GET",
         }).then((res) => res.json())
         .then((data) =>{
-        console.log(data.data,"position and department Data")
+        // console.log(data.data,"position and department Data")
         setPosition(data.data.position);
         setDepartment(data.data.department);
         })
     }
 
     function handleSubmit(){
+        if(positionID =="" && departmentID ==""){return }
+        else if(positionID =="" && departmentID !=""){
+            positionID = props.positionID
+         }
+         else if(positionID !="" && departmentID ==""){
+            departmentID = props.departmentID
+         }
         fetch("http://localhost:5000/employee-update",{
           method:"POST",
           crossDomain:true,
@@ -41,9 +51,10 @@ function PopupPosition(props) {
           })
         }).then((res) => res.json())
         .then((data) =>{
+            setAlertData(data.status);
           console.log(data,"personal update");
         })
-        window.location.reload(true)
+        // window.location.reload(true)
       }
 
     return(props.trigger) ? (
@@ -86,6 +97,7 @@ function PopupPosition(props) {
                                 
                                 
                             </table>
+                            {alert==""?<tr></tr>:<div><b class="text-danger">{alert}</b></div>}
                         </div>
                         <div class="modal-footer">
                         <button onClick={()=> props.setTrigger(false)} class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>

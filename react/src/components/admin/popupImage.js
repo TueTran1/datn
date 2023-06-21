@@ -8,6 +8,8 @@ function PopupImage(props) {
     // console.log(state.user._id);
     const userID =state.user._id;
     const [image, setImage] = useState("");
+    let [alert, setAlertData] = useState("");
+
     function convertToBase64(e) {
         // console.log(e);
         var reader = new FileReader();
@@ -17,7 +19,7 @@ function PopupImage(props) {
             setImage(reader.result);
         };
         reader.onerror = error => {
-            console.log("Error: ", error);
+            // console.log("Error: ", error);
         };
     }
     function uploadImage() {
@@ -34,7 +36,12 @@ function PopupImage(props) {
                 base64: image
             })
         }).then((res) => res.json())
-        window.location.reload(true)
+        .then((data) =>{
+            setAlertData(data.status)
+            console.log(alert,"alert")
+          console.log(data,"personal update");
+        })
+        // window.location.reload(true)
     }
     return(props.trigger) ? (
     
@@ -50,6 +57,8 @@ function PopupImage(props) {
                         <div class="modal-body">
                             {image == "" || image == null ? "" : <img width={420} height={250} src={image}/>}
                         </div>
+                        {alert==""?<tr></tr>:<div><b class="text-danger">{alert}</b></div>}
+
                         <div class="modal-footer">
                         <input  accept="image/*" type="file" onChange={convertToBase64}/>
                             <button class="btn btn-primary btn-user " onClick={(uploadImage)} >Save</button>

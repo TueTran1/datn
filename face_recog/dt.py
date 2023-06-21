@@ -12,18 +12,18 @@ import base64
 from io import BytesIO
 
 
-myclient = pymongo.MongoClient("/")
+myclient = pymongo.MongoClient("mongodb+srv://tranthanhtue:tuetran123@cluster0.lsnutbu.mongodb.net/")
 db = myclient["blog-database"]
 detection = db["detections"]
 user=db["users"]
 
 
-imagedict= detection.find({},{"_id":1,"captured":1})
+imagedict= user.find({},{"_id":1,"image":1})
 
 with open(r'get-base64.txt', 'w') as fp:
     for item in imagedict:
-        if item["captured"] != "" and item["captured"] != None and item["captured"] != "no image":
-            fp.write("%s%s\n" % (item["_id"] ,item["captured"]) )
+        if item["image"] != "" and item["image"] != None and item["image"] != "no image":
+            fp.write("%s%s\n" % (item["_id"] ,item["image"]) )
     print('Done')
 data = []
 

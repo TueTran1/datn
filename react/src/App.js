@@ -18,6 +18,7 @@ import PositionCreate from './components/positionCreate'
 import DepartmentCreate from './components/departmentCreate'
 import UserCreate from './components/userCreateSplit'
 import SalaryInfo from './components/salaryInfoSplit'
+import WorkSchedule from './components/workScheduleSplit'
 
 function App() {
   const isLoggedIn = window.localStorage.getItem("loggedIn")
@@ -41,6 +42,7 @@ function App() {
               <Route path="/company-details/create-position"  element={<PositionCreate />}/>
               <Route path="/company-details/create-department"  element={<DepartmentCreate />}/>
               <Route path="/user-details/:id/salary"  element={<SalaryInfo />}/>
+              <Route path="/work-schedule"  element={<WorkSchedule />}/>
             </Routes>
         
       </div>

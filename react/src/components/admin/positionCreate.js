@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
+import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 export default class PositionCreate extends Component {
+  
      logOut=()=>{
         window.localStorage.clear()
         window.location.href="./sign-in"
@@ -10,13 +12,17 @@ export default class PositionCreate extends Component {
     this.state={
         positionName:"",
         description:"", 
+        alert:""
     };
     this.handleSubmit = this.handleSubmit.bind(this)
   }
   handleSubmit(e){
+    if(positionName==""||description==""){
+      return this.alert="Input are not filled"
+  }
     e.preventDefault();
     const{positionName,description }=this.state
-    console.log(positionName,description)
+    // console.log(positionName,description)
     fetch("http://localhost:5000/positionCreate",{
       method:"POST",
       crossDomain:true,
@@ -30,7 +36,8 @@ export default class PositionCreate extends Component {
       })
     }).then((res) => res.json())
     .then((data) =>{
-      console.log(data,"positionCreate");
+      console.log(data.status)
+      this.alert=data.status
     })
   }
   render() {
@@ -77,10 +84,17 @@ export default class PositionCreate extends Component {
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
+        <li class="nav-item active">
+        <a class="nav" >
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span className="px py bg-gradient-focus text-white"><Link className="nav-link " to={'/company-details'}> Company Management</Link></span></a>
+        </li>
+        <hr class="sidebar-divider my-0"></hr>
+
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/company-details'}> Company Management</Link></span></a>
+                <span><Link className="nav-link " to={'/change-password'}> Change Password</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
@@ -117,16 +131,30 @@ export default class PositionCreate extends Component {
                             <h6 class="m-0 font-weight-bold text-primary">Create New Position</h6>
                         </div>
                         <form class="user" onSubmit={this.handleSubmit}>
-                                        <div class="form-group">
-                                        <input   type="text" class=" " placeholder="Position Name"
-                                          onChange={(e) => this.setState({positionName: e.target.value})}/>
-                                        </div>
-                                        <div class="form-group">
-                                        <input   type="text" class=" " placeholder="Description"
-                                          onChange={(e) => this.setState({description: e.target.value})}/>
-                                        </div>
-                                          <button type="submit" class="btn btn-primary btn-user ">Save</button>
-                                    </form>
+                        <br></br>
+                                <table  width="100%" cellspacing="0">
+                                    <tfoot>
+                                        <tr>
+                                            <th>Position Name:</th>
+                                            <td><input   type="text" class="border border-dark" placeholder="Position Name"
+                                               onChange={(e) => this.setState({positionName: e.target.value})} /></td>
+                                        </tr>
+                                        <br></br>
+                                        <tr>
+                                            <th>Description:</th>
+                                            <td><input   type="text" class="border border-dark" placeholder="Description"
+                                                onChange={(e) => this.setState({description: e.target.value})}/></td>
+                                        </tr>  
+                                        <br></br>                                  
+                                    </tfoot>
+                                    
+                                </table>
+                            <div class="form-group">
+                            {alert==""?<tr></tr>:<div><b class="text-danger">{alert}</b></div>}
+
+                            </div>
+                              <button type="submit" class="btn btn-primary btn-user ">Save</button>
+                        </form>
                     </div>
 
 

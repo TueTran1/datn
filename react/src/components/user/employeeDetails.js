@@ -1,47 +1,72 @@
 import React from "react";
-import {useState} from "react";
+import {useEffect,useState} from "react";
 import { useLocation, Link } from "react-router-dom";
 
-const ViewUserDetails = (_) => {
-    const [buttonPopup, setButtonPopup] = useState(false)
+const EmployeeDetails = (_) => {
+    const [department, setDepartmentData] = useState("");
+    const [position, setPositionData] = useState("");
   const { state } = useLocation();
-  console.log(state.user.username)
+//   console.log(state.user.username)
   const logOut=()=>{
         window.localStorage.clear()
-        window.location.href="./sign-in"
+        window.location.href="/sign-in"
     }
+    function getUserInfo() {
+        fetch("http://localhost:5000/get-info",{
+        method:"POST",
+        crossDomain:true,
+        headers:{
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+            userID : state.user._id
+        })
+        }).then((res) => res.json())
+        .then((data) =>{
+            // console.log(data,"get info");
+            setDepartmentData(data.data.department)
+            setPositionData(data.data.position)
+        })
+    }
+
+    useEffect(()=>{
+        getUserInfo()
+    },[])
   return (
     <div id="wrapper">
 
 <ul  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-        <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-laugh-wink"></i>
-        </div>
-        <div class="sidebar-brand-text mx-3">Employee Page<sup></sup></div>
-    </a>
+<a class="sidebar-brand d-flex align-items-center justify-content-center" href="/home">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-laugh-wink"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">Employee Page<sup></sup></div>
+        </a>
 
-    <hr class="sidebar-divider my-0"></hr>
+        <hr class="sidebar-divider my-0"></hr>
 
-    <li class="nav-item">
+        <li class="nav-item">
             <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span><Link className="nav-link " to={'/home'}>Home Page</Link></span></a>
         </li>
-    <hr class="sidebar-divider my-0"></hr>
-    
-    <li class="nav-item">
+
+        <hr class="sidebar-divider my-0"></hr>
+
+        <li class="nav-item active">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Users Management</Link></span></a>
+                <span className="px py bg-gradient-focus text-white"><Link className="nav-link " to={'/user-details'}>Company Employees </Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/detection-details'}>Detections Management</Link></span></a>
+                <span><Link className="nav-link " to={'/detection-details'}>Timekeeping Details</Link></span></a>
         </li>
         
         <hr class="sidebar-divider my-0"></hr>
@@ -49,25 +74,32 @@ const ViewUserDetails = (_) => {
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Dayoff Requests</Link></span></a>
+                <span><Link className="nav-link " to={'/work-schedule'}> Work Schedule</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/company-details'}> Company Managent</Link></span></a>
+                <span><Link className="nav-link " to={'/company-details'}> Company Details</Link></span></a>
+        </li>
+        <hr class="sidebar-divider my-0"></hr>
+
+        <li class="nav-item">
+        <a class="nav" >
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span><Link className="nav-link " to={'/change-password'}> Change Password</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
 
-    <li class="nav-item">
-        <a class="nav-link" >
-            <i class="fas fa-fw fa-tachometer-alt"></i>
-           <button onClick={logOut} class="btn btn-primary btn-user ">Log out</button></a>
-    </li>
+            <li class="nav-item">
+                <a class="nav-link" >
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                <button onClick={logOut} class="btn btn-primary btn-user ">Log out</button></a>
+            </li>
 
-    <hr class="sidebar-divider"></hr>            
+            <hr class="sidebar-divider"></hr>          
 
 </ul>
 
@@ -93,7 +125,10 @@ const ViewUserDetails = (_) => {
                                 <h6 class="m-0 font-weight-bold text-primary">Profile image</h6>
                             </div>
                             <div class="card-body">
-                                <div></div>
+                            {state.user.image == "" || state.user.image == null || state.user.image == "no image" ? "" : <img width={420} height={250} src={state.user.image}/>}
+                            <h1 class="h5 mb-0 text-gray-800"><u></u></h1>
+                            <br/>
+                               
                             </div>
                         </div>
                     </div>
@@ -114,8 +149,8 @@ const ViewUserDetails = (_) => {
                                 </thead>
                                 <tfoot>
                                     <tr>
-                                        <td>Position</td>
-                                        <td>Department</td>
+                                    { department == undefined ||department.departmentName == ""  ? "" : <td>{department.departmentName}</td>}
+                                            { position == undefined ||position.positionName == "" ? "" : <td>{position.positionName}</td>}
                                     </tr>
                                 </tfoot>
                                 
@@ -184,4 +219,4 @@ const ViewUserDetails = (_) => {
   );
 };
 
-export default ViewUserDetails;
+export default EmployeeDetails;

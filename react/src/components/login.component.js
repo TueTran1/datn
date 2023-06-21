@@ -1,18 +1,15 @@
-import React, { Component } from 'react'
+import React from "react";
+import {useEffect,useState} from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
-export default class Login extends Component {
-  constructor(props){
-    super(props)
-    this.state={
-      username:'',
-      password:'', 
+const Login = ()=> {
+  const [username, setUsernameData] = useState("");
+  const [password, setPasswordData] = useState("");
+  let[alert,setAlertData]=useState("")
+
+  function handleSubmit(){
+    if(username==""|| password==""){
+      return setAlertData("Inputs are not filled")
     }
-    this.handleSubmit = this.handleSubmit.bind(this)
-  }
-  handleSubmit(e){
-    e.preventDefault();
-    const{username,password}=this.state
-    console.log(username,password)
     fetch("http://localhost:5000/login",{
       method:"POST",
       crossDomain:true,
@@ -26,15 +23,14 @@ export default class Login extends Component {
       })
     }).then((res) => res.json())
     .then((data) =>{
-      console.log(data,"userLogin");
-      if(data.status=='ok'){
+      setAlertData(data.status)
+      if(data.status=='Login Successfully'){
         window.localStorage.setItem('token',data.data)
         window.localStorage.setItem('loggedIn',true)
         window.location.href = './home'
       }
     })
   }
-  render() {
     return (
       <div class="container">
 
@@ -50,37 +46,29 @@ export default class Login extends Component {
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">Sign in</h1>
                                     </div>
-                                    <form class="user" onSubmit={this.handleSubmit}>
-                                        <div class="form-group">
-                                          <input  type="text" class=" form-control-user" size="50"   
-                                            placeholder="Enter Username"
-                                            onChange={(e) => this.setState({username: e.target.value})}
-                                          />
-                                        </div>
-                                        <div class="form-group">
-                                        <input  type="password"   class=" form-control-user"
-                                            placeholder="Enter password"
-                                            onChange={(e) => this.setState({password: e.target.value})}
-                                          />
-                                        </div>
-                                        <div class="form-group">
-                                        <div className="custom-control custom-checkbox">
-                                            <input
-                                              type="checkbox"
-                                              className="custom-control-input"
-                                              id="customCheck1"
-                                            />
-                                            <label className="custom-control-label" htmlFor="customCheck1">
-                                              Remember me
-                                            </label>
-                                          </div>
-                                        </div>
-                                          <button type="submit" class="btn btn-primary btn-user ">Login</button>
-                                    </form>
+                                <div class="text-center">
+                                    <b>Username: </b>
+                                    <input type="text" class="border border-dark" placeholder="Username"
+                                        onChange={(e) => setUsernameData(e.target.value)}/>
+                                </div>
+                                <br></br>
+                                <div class="text-center">
+                                    <b>Password: </b>
+                                    <input   type="password" class="border border-dark" placeholder="Password"
+                                      onChange={(e) => setPasswordData(e.target.value)}/>
+                                </div>
+                                <br></br>
+
+                                <div class="text-center">
+                                {alert==""?<tr></tr>:<div><b class="text-danger">{alert}</b></div>}
+                            <button class="btn btn-primary  " onClick={(handleSubmit)}  >Log in</button>
+                                </div>
                                     <div class="text-center">
+                                      
                                         <a class="small" href="forgot-password.html">Forgot Password?</a>
                                     </div>
                                     <div class="text-center">
+                                      
                                         <Link className="nav-link small" to={'/sign-up'}>
                                           Sign up
                                         </Link>
@@ -98,4 +86,4 @@ export default class Login extends Component {
     </div>
     )
   }
-}
+  export default Login

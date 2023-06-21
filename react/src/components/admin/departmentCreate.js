@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 export default class DepartmentCreate extends Component {
      logOut=()=>{
         window.localStorage.clear()
-        window.location.href="./sign-in"
+        window.location.href="/sign-in"
     }
   constructor(props){
     super(props)
@@ -16,7 +16,7 @@ export default class DepartmentCreate extends Component {
   handleSubmit(e){
     e.preventDefault();
     const{departmentName,description }=this.state
-    console.log(departmentName,description)
+    // console.log(departmentName,description)
     fetch("http://localhost:5000/departmentCreate",{
       method:"POST",
       crossDomain:true,
@@ -30,7 +30,7 @@ export default class DepartmentCreate extends Component {
       })
     }).then((res) => res.json())
     .then((data) =>{
-      console.log(data,"departmentCreate");
+      // console.log(data,"departmentCreate");
     })
   }
   render() {
@@ -39,7 +39,7 @@ export default class DepartmentCreate extends Component {
 
 <ul  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/home">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
@@ -73,14 +73,21 @@ export default class DepartmentCreate extends Component {
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/user-details'}> Dayoff Requests</Link></span></a>
+                <span><Link className="nav-link " to={'/work-schedule'}> Work Schedule</Link></span></a>
+        </li>
+        <hr class="sidebar-divider my-0"></hr>
+
+        <li class="nav-item active">
+        <a class="nav" >
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span className="px py bg-gradient-focus text-white"><Link className="nav-link " to={'/company-details'}> Company Management</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 
         <li class="nav-item">
         <a class="nav" >
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span><Link className="nav-link " to={'/company-details'}> Company Management</Link></span></a>
+                <span><Link className="nav-link " to={'/change-password'}> Change Password</Link></span></a>
         </li>
         <hr class="sidebar-divider my-0"></hr>
 

@@ -2,12 +2,12 @@ import React from "react";
 // import 'D:/project/doan/frontend/src/popup.css'
 import { useLocation, Link } from "react-router-dom";
 
-function Popup(props) {
+function PopupDelete(props) {
     const { state } = useLocation();
-    // console.log(state.user._id);
-    const userID =state.user._id;
+    // console.log(state.user.username);
+    
     const deleteUser=()=>{
-        const{userID }=state.user._id;
+        
         // console.log(userID)
         fetch("http://localhost:5000/deleteUser",{
         method:"POST",
@@ -18,11 +18,11 @@ function Popup(props) {
             "Access-Control-Allow-Origin": "*",
         },
         body: JSON.stringify({
-            userID
+            userID:state.user._id
         })
         }).then((res) => res.json())
         .then((data) =>{
-        console.log(data,"delete");
+        // console.log(data,"delete");
         })
     }
     return(props.trigger) ? (
@@ -51,4 +51,4 @@ function Popup(props) {
     ):"";
 }
 
-export default Popup
+export default PopupDelete

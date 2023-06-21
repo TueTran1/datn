@@ -12,7 +12,7 @@ import base64
 from io import BytesIO
 
 
-myclient = pymongo.MongoClient("/")
+myclient = pymongo.MongoClient("mongodb+srv://tranthanhtue:tuetran123@cluster0.lsnutbu.mongodb.net/")
 db = myclient["blog-database"]
 detection = db["detections"]
 user=db["users"]
@@ -41,6 +41,7 @@ class FaceRecognition:
     
 
     def __init__(self):
+        self.getImage()
         self.encode_faces()
 
     def encode_faces(self):
@@ -51,16 +52,30 @@ class FaceRecognition:
             self.known_face_encodings.append(face_encoding)
             self.known_face_names.append(image[:-4])
 
-    # def getImage(self):
-    #     data = []
-    #     data = open('demo.txt', 'r').readlines()
-    #     for index,value in enumerate(data):
-    #         value=value[value.rindex(',')+1:]
-    #         bytes_decoded=base64.b64decode(value)
-    #         img=Image.open(BytesIO(bytes_decoded))
-    #         out_jpg=img.convert('RGB')
-    #         name='./faces/img_'+ str(index)+'.jpg'
-    #     out_jpg.save(name)
+    def getImage(self):
+        imagedict= user.find({},{"_id":1,"image":1})
+
+        with open(r'get-base64.txt', 'w') as fp:
+            for item in imagedict:
+                if item["image"] != "" and item["image"] != None and item["image"] != "no image":
+                    fp.write("%s%s\n" % (item["_id"] ,item["image"]) )
+            print('Done')
+        data = []
+
+        with open("get-base64.txt", 'r') as r, open('remove-blank.txt', 'w') as o:
+            for line in r:
+                if not line.isspace():
+                    o.write(line)
+
+        data = open('remove-blank.txt', 'r').readlines()
+        for index,value in enumerate(data):
+            id = value[0:24]
+            value=value[value.rindex(',')+1:]
+            bytes_decoded=base64.b64decode(value)
+            img=Image.open(BytesIO(bytes_decoded))
+            out_jpg=img.convert('RGB')
+            name='./faces/'+ str(id)+'.jpg'
+            out_jpg.save(name)
 
     def run_recognition(self):
         video_capture = cv2.VideoCapture(0)

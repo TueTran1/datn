@@ -3,26 +3,11 @@ import React from "react";
 import { useLocation, Link } from "react-router-dom";
 import {useEffect,useState} from "react";
 
-function PopupImage(props) {
-    const detection = props.detections.time;
+function PopupCaptured(props) {
     const date = props.detections.time.slice(0, 10)
     const time = props.detections.time.slice(11, 19)
-    // console.log(detections);
-    const userID ="state.user._id";
-    const [image, setImage] = useState("");
-    function convertToBase64(e) {
-        // console.log(e);
-        var reader = new FileReader();
-        reader.readAsDataURL(e.target.files[0]);
-        reader.onload = () => {
-            // console.log(reader.result); //base64encoded string  
-            setImage(reader.result);
-        };
-        reader.onerror = error => {
-            console.log("Error: ", error);
-        };
-    }
-    console.log(props.trigger)
+    
+    // console.log(props.trigger)
     return(props.trigger) ? (
     
         <div className="popup-image"  >
@@ -64,4 +49,4 @@ function PopupImage(props) {
     ):"";
 }
 
-export default PopupImage
+export default PopupCaptured
