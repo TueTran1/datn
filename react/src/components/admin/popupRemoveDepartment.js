@@ -9,7 +9,7 @@ function PopupRemoveDepartment(props) {
         const departmentID=props.departmentID
         // console.log(userID)
         fetch("http://localhost:5000/delete-department",{
-        method:"POST",
+        method:"DELETE",
         crossDomain:true,
         headers:{
             "Content-Type": "application/json",

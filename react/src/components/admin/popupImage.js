@@ -24,7 +24,7 @@ function PopupImage(props) {
     }
     function uploadImage() {
         fetch("http://localhost:5000/update-image", {
-            method: "POST",
+            method: "PUT",
             crossDomain: true,
             headers: {
                 "Content-Type": "application/json",

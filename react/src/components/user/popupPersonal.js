@@ -40,7 +40,7 @@ function PopupPosition(props) {
         if(email==""){email=props.user.email}
         if(gender==""){gender=props.user.gender}
         fetch("http://localhost:5000/personal-update",{
-          method:"POST",
+          method:"PUT",
           crossDomain:true,
           headers:{
             "Content-Type": "application/json",

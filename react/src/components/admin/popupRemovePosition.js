@@ -10,7 +10,7 @@ function PopupRemovePosition(props) {
         
         // console.log(userID)
         fetch("http://localhost:5000/delete-position",{
-        method:"POST",
+        method:"DELETE",
         crossDomain:true,
         headers:{
             "Content-Type": "application/json",

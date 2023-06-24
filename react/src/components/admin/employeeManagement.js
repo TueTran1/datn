@@ -28,6 +28,14 @@ const EmployeeManagement = (userData) => {
     // console.log(state,"state")
     const userID = state.user._id
     
+    function minusOneDay(date ) {
+        date = new Date(date); 
+
+        date.setDate(date.getDate()- 1);
+      
+        return date;
+      }
+    
     const logOut=()=>{
             window.localStorage.clear()
             window.location.href="/sign-in"
@@ -310,7 +318,7 @@ const EmployeeManagement = (userData) => {
                                         <th>Gender</th>
                                     </tr>
                                     <tr>
-                                        {data.dob==null || data.dob == "" ? <td>-</td>:<td>{data.dob.slice(0,10)}</td>}
+                                        {data.dob==null || data.dob == "" ? <td>-</td>:<td>{(data.dob).slice(0,10)}</td>}
                                         <td>{data.gender}</td>
                                     </tr>
                                     <tr>

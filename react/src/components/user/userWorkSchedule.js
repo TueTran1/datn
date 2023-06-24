@@ -142,7 +142,8 @@ const UserWorkSchedule = (userData) => {
     function workSchedule(Dayoff,selectDate,user) {
         const notWorkingDay = Dayoff.filter((dayoffs)=>(dayoffs.started.slice(0,10)==addOneDay(selectDate.toISOString().slice(0,10)).toISOString().slice(0,10)
         && dayoffs.condition=="yes" ))
-        if(notWorkingDay==""){return user==undefined || user ==""?<tr></tr>:user.map(user=>(
+        if(notWorkingDay==""){
+            return user==undefined || user ==""?<tr></tr>:user.map(user=>(
             user.role=="admin" ?
             <tr></tr>: user.start =="" || user.start==undefined?<tr></tr>: user.stop ==""||user.stop==undefined?<tr>
                 <td>{user.username}</td>
@@ -188,7 +189,7 @@ const UserWorkSchedule = (userData) => {
     
 
   return (
-    <div id="wrapper">{console.log(allDayoff,"ddd")}
+    <div id="wrapper">
 
 <ul  class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 

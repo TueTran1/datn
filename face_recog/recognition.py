@@ -53,8 +53,10 @@ class FaceRecognition:
             self.known_face_names.append(image[:-4])
 
     def getImage(self):
+        #Get all image for detection as base64 from database 
         imagedict= user.find({},{"_id":1,"image":1})
 
+        #Save all base64 lines to "get-base64.txt" file
         with open(r'get-base64.txt', 'w') as fp:
             for item in imagedict:
                 if item["image"] != "" and item["image"] != None and item["image"] != "no image":
@@ -62,11 +64,13 @@ class FaceRecognition:
             print('Done')
         data = []
 
+        #Remove all the space and save to "remove-blank.txt" file
         with open("get-base64.txt", 'r') as r, open('remove-blank.txt', 'w') as o:
             for line in r:
                 if not line.isspace():
                     o.write(line)
 
+        #Save all the images to the "/faces" folder
         data = open('remove-blank.txt', 'r').readlines()
         for index,value in enumerate(data):
             id = value[0:24]
@@ -118,6 +122,7 @@ class FaceRecognition:
                         k=[]
                         
                         times=[]
+                        #Find all the detections that have the same userID
                         for x in detection.find({"user":ObjectId(name),"type":"Out"},{"_id":0,"time":1}):
                             k.append(x)
 
@@ -125,9 +130,9 @@ class FaceRecognition:
                             tmp = e["time"]
                             times.append(tmp)
                         
+                        #If the list is empty then write to database
                         if times==[]:
                             detected = datetime.now()
-                            # detected = datetime.now(pytz.timezone('Asia/Ho_Chi_Minh'))
                             time= "".join(e for e in str(detected) if e.isalnum())
                             cv2.imwrite("captured/"+name+time+".jpg", frame)
 
@@ -140,18 +145,14 @@ class FaceRecognition:
                             detection.insert_one({"user":ObjectId(name),"time": detected,"type":"Out","confidence":confidence,"captured":captured })
                             print(name,datetime.now(pytz.timezone('Asia/Ho_Chi_Minh')),"Out")
 
+                        #If the list is not empty then compare to the latest time if it is more than 10 secons then write to database
                         else:
                             latest = max(times)
-                            # latest = latest.replace(tzinfo=timezone.utc).astimezone(tz=None)
                             print("latest: ",name,latest)
-                            # now = datetime.now()
-                            # now = datetime.utcnow()
-                            # now = now.replace(tzinfo=timezone.utc).astimezone(tz=None)
                             
                             diff = (datetime.now()-latest).total_seconds()  
                             print("diff: ",name,diff)
                             detected = datetime.now()
-                            # detected = datetime.now(pytz.timezone('Asia/Ho_Chi_Minh'))
 
                             if (datetime.now()-latest).total_seconds() > 10:
                                 time= "".join(e for e in str(detected) if e.isalnum())

@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useLocation, Link ,useNavigate} from "react-router-dom";
 
 const Signup = ({}) => {
-  const [username, setUsernameData] = useState("");
+    const [username, setUsernameData] = useState("");
     const [password, setPasswordData] = useState("");
     const [confirmpassword, setConfirmpassword] = useState("")
     const [email, setEmailData] = useState("");
@@ -18,8 +18,6 @@ const Signup = ({}) => {
     let[alert,setAlertData]=useState("")
 
     const handleSubmit=()=>{
-      // dob = addOneDay(dob)
-      // start = addOneDay(start)
       if(password==""||username==""||confirmpassword==""){
           return setAlertData("Input are not filled")
       }

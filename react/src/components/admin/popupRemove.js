@@ -10,7 +10,7 @@ function PopupRemove(props) {
         
         // console.log(userID)
         fetch("http://localhost:5000/update-dayoff",{
-        method:"POST",
+        method:"PUT",
         crossDomain:true,
         headers:{
             "Content-Type": "application/json",

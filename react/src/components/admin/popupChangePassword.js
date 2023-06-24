@@ -18,7 +18,7 @@ function PopupChangePassword(props) {
             return setAlert("New Password is not confirmed")
         }
         fetch("http://localhost:5000/change-password-from-admin",{
-        method:"POST",
+        method:"PUT",
         crossDomain:true,
         headers:{
             "Content-Type": "application/json",

@@ -198,7 +198,7 @@ const UserCreate = ({userData}) => {
                                         <br></br> 
                                         <tr>
                                           <th>Address:</th>
-                                          <td><input   type="text" class="border border-dark" placeholder="Confirm New Password"
+                                          <td><input   type="text" class="border border-dark" placeholder="Address"
                                               onChange={(e) => setAddressData(e.target.value)}/></td>
                                           <th>Birthday:</th>
                                           <td><DatePicker
@@ -257,7 +257,7 @@ const UserCreate = ({userData}) => {
                                         <tr>
                                           <th>Gender:</th>
                                           <td><select className="form-control"  onChange={(e) => setGenderData(e.target.value)}>
-                                            <option value="ohter">Choose Gender</option>
+                                            <option value="other">Choose Gender</option>
                                             <option value="male">Male</option>
                                             <option value="female">Female</option>
                                             <option value="other">Other</option>

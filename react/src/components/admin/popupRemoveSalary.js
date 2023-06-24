@@ -10,7 +10,7 @@ function PopupRemoveSalary(props) {
         
         // console.log(userID)
         fetch("http://localhost:5000/delete-salary",{
-        method:"POST",
+        method:"DELETE",
         crossDomain:true,
         headers:{
             "Content-Type": "application/json",

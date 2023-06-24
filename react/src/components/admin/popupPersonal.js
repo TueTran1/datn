@@ -18,7 +18,10 @@ function PopupPersonal(props) {
     let [role, setRole] = useState("");
     let [dob, setDob] = useState(new Date((state.user.dob)));
     let [start, setStart] = useState(new Date(minusOneDay(state.user.start)));
+
     let [stop, setStop] = useState(new Date(minusOneDay(state.user.stop)));
+
+    
     let [alert, setAlertData] = useState("");
 
     function addOneDay(date ) {
@@ -57,7 +60,7 @@ function PopupPersonal(props) {
         if (start > stop)
             {return setAlertData("Stopped date must be greater than Started date")}
         fetch("http://localhost:5000/personal-update",{
-          method:"POST",
+          method:"PUT",
           crossDomain:true,
           headers:{
             "Content-Type": "application/json",
@@ -107,6 +110,15 @@ function PopupPersonal(props) {
                                         <th>Gender</th>
                                     </tr>
                                     <tr>
+                                    {state.user.dob==undefined||state.user.dob==null||state.user.dob==""?
+                                            <td><DatePicker
+                                            selected={new Date()}
+                                            onChange={setDob}
+                                            peekNextMonth
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dropdownMode= "scroll"
+                                        /></td>:
                                         <td><DatePicker
                                             selected={dob}
                                             onChange={setDob}
@@ -114,8 +126,8 @@ function PopupPersonal(props) {
                                             showMonthDropdown
                                             showYearDropdown
                                             dropdownMode= "scroll"
-                                            // onInputClick={console.log( dob)}
                                         /></td>
+                                        }
                                         <td><select className="form-control"  onChange={(e) => setGender(e.target.value)}>
                                             <option value={state.user.gender}>{state.user.gender}</option>
                                             <option value="male">Male</option>
@@ -128,6 +140,15 @@ function PopupPersonal(props) {
                                         <th>Stopped working</th>
                                     </tr>
                                     <tr>
+                                    {state.user.start==undefined||state.user.start==null||state.user.start==""?
+                                            <td><DatePicker
+                                            selected={new Date()}
+                                            onChange={setStart}
+                                            peekNextMonth
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dropdownMode= "scroll"
+                                        /></td>:
                                         <td><DatePicker
                                             selected={start}
                                             onChange={setStart}
@@ -136,6 +157,16 @@ function PopupPersonal(props) {
                                             showYearDropdown
                                             dropdownMode= "scroll"
                                         /></td>
+                                        }
+                                        {state.user.stop==undefined||state.user.stop==null||state.user.stop==""?
+                                            <td><DatePicker
+                                            selected={new Date()}
+                                            onChange={setStop}
+                                            peekNextMonth
+                                            showMonthDropdown
+                                            showYearDropdown
+                                            dropdownMode= "scroll"
+                                        /></td>:
                                         <td><DatePicker
                                             selected={stop}
                                             onChange={setStop}
@@ -144,6 +175,8 @@ function PopupPersonal(props) {
                                             showYearDropdown
                                             dropdownMode= "scroll"
                                         /></td>
+                                        }
+                                        
                                     </tr>
                                     <tr>
                                         <th>Email</th>

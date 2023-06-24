@@ -29,7 +29,7 @@ const AdminChangePassword = ({userData}) => {
             return setAlertData("New password must be diffrent from current one")
         }
         fetch("http://localhost:5000/change-password",{
-          method:"POST",    
+          method:"PUT",    
           crossDomain:true,
           headers:{
             "Content-Type": "application/json",

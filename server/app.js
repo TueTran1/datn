@@ -146,7 +146,7 @@ app.post("/login", async (req, res) => {
   res.json({ status: "Invalid Password", error: "InvAlid Password" });
 });
 
-app.post("/change-password", async (req, res) => {
+app.put("/change-password", async (req, res) => {
   const { userID,password,newpassword } = req.body;
 
   const user = await User.findOne({ _id:userID });
@@ -164,7 +164,7 @@ app.post("/change-password", async (req, res) => {
   }
 });
 
-app.post("/change-password-from-admin", async (req, res) => {
+app.put("/change-password-from-admin", async (req, res) => {
   const { userID,password,newpassword } = req.body;
 
   const user = await User.findOne({ _id:userID });
@@ -282,7 +282,7 @@ app.get("/getPositionAndDeparment",async(req, res)=>{
   }
 })
 
-app.post('/deleteUser',async(req,res) => {
+app.delete('/deleteUser',async(req,res) => {
   const {userID}=req.body;
   try {
     // const findUser = await User.findById(userID);
@@ -294,7 +294,7 @@ app.post('/deleteUser',async(req,res) => {
   }
 })
 
-app.post('/delete-position',async(req,res) => {
+app.delete('/delete-position',async(req,res) => {
   const {positionID}=req.body;
   try {
     // const findUser = await User.findById(userID);
@@ -306,7 +306,7 @@ app.post('/delete-position',async(req,res) => {
   }
 })
 
-app.post('/delete-salary',async(req,res) => {
+app.delete('/delete-salary',async(req,res) => {
   const {salaryID}=req.body;
   try {
     // const findUser = await User.findById(userID);
@@ -318,7 +318,7 @@ app.post('/delete-salary',async(req,res) => {
   }
 })
 
-app.post('/delete-department',async(req,res) => {
+app.delete('/delete-department',async(req,res) => {
   const {departmentID}=req.body;
   try {
     // const findUser = await User.findById(userID);
@@ -330,7 +330,7 @@ app.post('/delete-department',async(req,res) => {
   }
 })
 
-app.post("/update-image", async (req, res) => {
+app.put("/update-image", async (req, res) => {
   const { userID,base64 } = req.body;
   try {
     await User.updateOne({_id: userID},{image: base64})
@@ -342,7 +342,7 @@ app.post("/update-image", async (req, res) => {
   }
 })
 
-app.post("/personal-update", async (req, res) => {
+app.put("/personal-update", async (req, res) => {
   const { userID,username,fullname,address,phonenumber,email,gender,role,dob,start,stop } = req.body;
   try {
     const isUsernameExist = await User.findOne({username: username,_id: {$ne: userID}})
@@ -380,7 +380,7 @@ app.post("/personal-update", async (req, res) => {
   }
 })
 
-app.post("/employee-update", async (req, res) => {
+app.put("/employee-update", async (req, res) => {
   const { userID,positionID,departmentID } = req.body;
   // console.log(req.body)
   try {
@@ -467,7 +467,7 @@ app.get("/get-all-dayoff",async(req, res)=>{
   }
 })
 
-app.post("/update-dayoff", async (req, res) => {
+app.put("/update-dayoff", async (req, res) => {
   const { dayoffID,condition } = req.body;
   try {
     await Dayoff.updateOne({_id: dayoffID},{condition: condition})
