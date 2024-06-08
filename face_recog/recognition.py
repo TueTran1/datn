@@ -12,7 +12,7 @@ import base64
 from io import BytesIO
 
 
-myclient = pymongo.MongoClient("mongodb+srv://tranthanhtue:tuetran123@cluster0.lsnutbu.mongodb.net/")
+myclient = pymongo.MongoClient("")
 db = myclient["blog-database"]
 detection = db["detections"]
 user=db["users"]
@@ -100,7 +100,7 @@ class FaceRecognition:
                 # Find all the faces and face encodings in the current frame of video
                 self.face_locations = face_recognition.face_locations(rgb_small_frame)
                 self.face_encodings = face_recognition.face_encodings(rgb_small_frame, self.face_locations)
-                
+
                 self.face_names = []
                 for face_encoding in self.face_encodings:
                     
@@ -109,12 +109,12 @@ class FaceRecognition:
                     name = "Unknown"
                     confidence = '???'
 
-                    
 
                     # Calculate the shortest distance to face
                     face_distances = face_recognition.face_distance(self.known_face_encodings, face_encoding)
 
                     best_match_index = np.argmin(face_distances)
+
                     if matches[best_match_index]:
                         name = self.known_face_names[best_match_index]
                         

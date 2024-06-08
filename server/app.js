@@ -33,9 +33,9 @@ app.use(bodyParser.json({limit: "50mb"}));
 // parse application/json
 app.use(express.json())
 
-const JWT_SECRET = 'E2831E78F46FD6C2735E4E3A3494623D4C3C1C7B9823633DE94D611AFA525459'
+const JWT_SECRET = ''
 const port = 5000
-const mongoUrl = 'mongodb+srv://tranthanhtue:tuetran123@cluster0.lsnutbu.mongodb.net/blog-database'
+const mongoUrl = ''
 
 mongoose.connect(mongoUrl)
 .then(()=>{
@@ -147,21 +147,21 @@ app.post("/login", async (req, res) => {
 });
 
 app.put("/change-password", async (req, res) => {
-  const { userID,password,newpassword } = req.body;
+  const { userID,newpassword } = req.body;
 
   const user = await User.findOne({ _id:userID });
   if (!user) {
     return res.json({ status: "User Not found" });
   }
-  const checkPassword = await bcryptjs.compare(password, user.password)
-  if (checkPassword) {
+  // const checkPassword = await bcryptjs.compare(password, user.password)
+  // if (checkPassword) {
     const encryptedPassword = await bcryptjs.hash(newpassword,10)
     await User.updateOne({_id: userID},{password: encryptedPassword})
     res.send({ status: "Password Changed" })
-  }
-  else{
-    res.send({ status: "Wrong Current Password" })
-  }
+  // }
+  // else{
+  //   res.send({ status: "Wrong Current Password" })
+  // }
 });
 
 app.put("/change-password-from-admin", async (req, res) => {
